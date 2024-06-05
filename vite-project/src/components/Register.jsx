@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthContext } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom'
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -97,6 +98,7 @@ const Register = () => {
                 />
             </div>
             <button className="btn btn-primary" onClick={handleRegister}>Register</button>
+            <Link to='/*'>Home</Link>
             {message && <div className="mt-3 alert alert-info">{message}</div>}
         </div>
     );

@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Login = () => {
@@ -61,6 +62,7 @@ const Login = () => {
                 />
             </div>
             <button className="btn btn-primary" onClick={handleLogin}>Login</button>
+            <Link to="/*">Home</Link>
             {message && <div className="mt-3 alert alert-info">{message}</div>}
         </div>
     );

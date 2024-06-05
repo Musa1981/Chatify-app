@@ -1,32 +1,35 @@
 import React, { useState, useEffect, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthContext } from '../contexts/AuthContext';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import DOMPurify from 'dompurify';
 
 const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [error, setError] = useState('');
-    const { user, token, logout } = useContext(AuthContext);
+    const { token, csrfToken } = useContext(AuthContext);
+
+    const fetchMessages = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/messages`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch messages');
+
+            const data = await response.json();
+            setMessages(data);
+        } catch (error) {
+            console.error("Error fetching messages:", error);
+            setError("Failed to fetch messages");
+        }
+    };
 
     useEffect(() => {
-        const fetchMessages = async () => {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_BASE_URL}/messages`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
-
-                if (!response.ok) throw new Error('Failed to fetch messages');
-
-                const data = await response.json();
-                setMessages(data);
-            } catch (error) {
-                console.error("Error fetching messages:", error);
-                setError("Failed to fetch messages");
-            }
-        };
-
         if (token) {
             fetchMessages();
         }
@@ -34,24 +37,30 @@ const Chat = () => {
 
     const handleCreateMessage = async () => {
         try {
+            const sanitizedMessage = DOMPurify.sanitize(newMessage);
+
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}/messages`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ content: newMessage }),
+                body: JSON.stringify({ text: sanitizedMessage, conversationId: null })
             });
 
             if (!response.ok) {
                 throw new Error('Failed to create message');
             }
 
-            const createdMessage = await response.json();
-            setMessages([...messages, createdMessage]);
+            const data = await response.json();
+            toast.success('Server responded: ' + data.message);
+
+            fetchMessages();
             setNewMessage('');
-        } catch (error) {
-            console.error("Error creating message:", error);
+
+        } catch (err) {
+            console.error("Error creating message:", err);
+            toast.error(JSON.stringify(err));
             setError("Failed to create message");
         }
     };
@@ -62,6 +71,7 @@ const Chat = () => {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
+                    'X-CSRF-Token': csrfToken,
                 },
             });
 
@@ -77,9 +87,8 @@ const Chat = () => {
     };
 
     return (
-        <div className="container mt-5">
+        <div className="container mt-5" style={{ position: 'relative' }}>
             <h2>Chat</h2>
-            <button className="btn btn-secondary mb-3" onClick={logout}>Logout</button>
             <div className="mb-3">
                 <input
                     type="text"
@@ -95,12 +104,10 @@ const Chat = () => {
                 {messages.map(msg => (
                     <li
                         key={msg.id}
-                        className={`list-group-item d-flex justify-content-between align-items-center ${msg.user === user.username ? 'text-right' : 'text-left'}`}
+                        className="list-group-item d-flex justify-content-between align-items-center"
                     >
-                        <span>{msg.user}: {msg.content}</span>
-                        {msg.user === user.username && (
-                            <button className="btn btn-danger" onClick={() => handleDeleteMessage(msg.id)}>Delete</button>
-                        )}
+                        <span>{msg.text}</span>
+                        <button className="btn btn-danger" onClick={() => handleDeleteMessage(msg.id)}>Delete</button>
                     </li>
                 ))}
             </ul>

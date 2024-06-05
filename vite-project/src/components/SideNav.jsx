@@ -1,19 +1,23 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { AuthContext } from '../contexts/AuthContext';
 
 const SideNav = () => {
-    const navigate = useNavigate();
+    const { logout } = useContext(AuthContext);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        location.href = '/login'
-    };
 
     return (
-        <div className="d-flex flex-column p-3 bg-light">
-            <button className="btn btn-danger mt-auto" onClick={handleLogout}>Logout</button>
+        <div className="side-nav">
+            <Link to="/user-management">Manage Users</Link>
+            <br></br>
+            <Link to="/chat">Chat</Link>
+            <button className="btn btn-danger mt-auto" style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                backgroundColor: 'green'
+            }} onClick={logout}>Logout</button>
         </div>
     );
 };
