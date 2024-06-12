@@ -1,13 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import CryptoJS from 'crypto-js';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-    const { login, csrfToken, fetchCsrfToken } = useContext(AuthContext);
+    const { user, login, csrfToken, fetchCsrfToken } = useContext(AuthContext);
 
     useEffect(() => {
         if (!csrfToken) {
@@ -17,18 +18,21 @@ const Login = () => {
 
     const handleLogin = async () => {
         try {
+            const hashedPassword = CryptoJS.SHA256(password).toString();
+
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/token`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password, csrfToken }),
+                body: JSON.stringify({ username, password: hashedPassword, csrfToken }),
             });
 
             const data = await response.json();
             if (!response.ok) {
                 setMessage(data.error);
             } else {
+                console.log("User data from API:", data.user); // Logga användarobjektet från API
                 login(data.user, data.token);
                 setMessage('Login successful');
             }
@@ -64,6 +68,13 @@ const Login = () => {
             <button className="btn btn-primary" onClick={handleLogin}>Login</button>
             <Link to="/*">Home</Link>
             {message && <div className="mt-3 alert alert-info">{message}</div>}
+
+            {user && (
+                <div className="mt-5">
+                    <h3>Logged in as: {user.username}</h3>
+                    {user.avatar && <img src={user.avatar} alt="Avatar" style={{ width: '100px', height: '100px' }} />}
+                </div>
+            )}
         </div>
     );
 };

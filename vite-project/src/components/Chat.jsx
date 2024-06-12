@@ -9,20 +9,19 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [error, setError] = useState('');
-    const { token, csrfToken } = useContext(AuthContext);
+    const { user, token, csrfToken, logout } = useContext(AuthContext);
 
     const fetchMessages = async () => {
         try {
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}/messages`, {
+                method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-
             if (!response.ok) throw new Error('Failed to fetch messages');
-
             const data = await response.json();
-            setMessages(data);
+            setMessages(data.reverse());
         } catch (error) {
             console.error("Error fetching messages:", error);
             setError("Failed to fetch messages");
@@ -32,11 +31,17 @@ const Chat = () => {
     useEffect(() => {
         if (token) {
             fetchMessages();
+            console.log("User object:", user);
         }
     }, [token]);
 
     const handleCreateMessage = async () => {
         try {
+            if (!newMessage.trim()) {
+                setError("Message cannot be empty");
+                return;
+            }
+
             const sanitizedMessage = DOMPurify.sanitize(newMessage);
 
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}/messages`, {
@@ -57,6 +62,7 @@ const Chat = () => {
 
             fetchMessages();
             setNewMessage('');
+            setError('');
 
         } catch (err) {
             console.error("Error creating message:", err);
@@ -88,6 +94,13 @@ const Chat = () => {
 
     return (
         <div className="container mt-5" style={{ position: 'relative' }}>
+            {user && (
+                <div className="user-info mb-4">
+                    <h3>Logged in as: {user.username}</h3>
+                    {user.avatar && <img src={user.avatar} alt="Avatar" style={{ width: '100px', height: '100px' }} />}
+                    <button className="btn btn-danger mt-2" onClick={logout}>Logout</button>
+                </div>
+            )}
             <h2>Chat</h2>
             <div className="mb-3">
                 <input

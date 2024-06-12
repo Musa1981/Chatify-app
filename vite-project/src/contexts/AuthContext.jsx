@@ -4,24 +4,27 @@ import { useNavigate } from 'react-router-dom';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const navigate = useNavigate();
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [user, setUser] = useState(() => {
         try {
             const storedUser = localStorage.getItem('user');
-            return storedUser ? JSON.parse(storedUser) : null;
+            console.log("Stored User:", storedUser); // Log user from localStorage
+            return storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null;
         } catch (error) {
             console.error('Error parsing user data from localStorage:', error);
-            localStorage.removeItem('user');
             return null;
         }
     });
     const [csrfToken, setCsrfToken] = useState(sessionStorage.getItem('csrf'));
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (token) {
             localStorage.setItem('token', token);
-            localStorage.setItem('user', JSON.stringify(user));
+            if (user) {
+                localStorage.setItem('user', JSON.stringify(user));
+                console.log("User saved to localStorage:", user); // Log user save to localStorage
+            }
         } else {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
@@ -47,17 +50,21 @@ export const AuthProvider = ({ children }) => {
     };
 
     const login = (user, token) => {
+        console.log("Logging in with user:", user); // Log user at login
         setToken(token);
         setUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('token', token);
         navigate('/chat');
     };
 
     const logout = () => {
         setToken(null);
         setUser(null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         navigate('/login');
     };
-
 
     const registerUser = async (username, password) => {
         try {
@@ -112,17 +119,23 @@ export const AuthProvider = ({ children }) => {
 
     const updateUser = async (user) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/user`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': csrfToken,
                 },
-                body: JSON.stringify(user),
+                body: JSON.stringify({
+                    userId: user.id,
+                    updatedData: user
+                }),
             });
             if (!response.ok) throw new Error('Failed to update user');
-            return response.json();
+            const updatedUser = await response.json();
+            setUser(updatedUser);
+            localStorage.setItem('user', JSON.stringify(updatedUser));  // Update localStorage
+            console.log("User updated in localStorage:", updatedUser); // Log updated user
+            return updatedUser;
         } catch (error) {
             console.error("Error updating user:", error);
             throw error;
