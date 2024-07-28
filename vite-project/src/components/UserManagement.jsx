@@ -2,13 +2,13 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 
+
 const UserManagement = () => {
     const { fetchUser, updateUser, deleteUser, logout } = useContext(AuthContext);
     const [user, setUser] = useState(null);
     const [userId, setUserId] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [avatar, setAvatar] = useState('');
     const [message, setMessage] = useState('');
     const navigate = useNavigate();

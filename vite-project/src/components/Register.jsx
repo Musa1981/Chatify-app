@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthContext } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import CryptoJS from 'crypto-js';
+
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -28,7 +28,6 @@ const Register = () => {
 
         try {
 
-            const hashedPassword = CryptoJS.SHA256(password).toString();
 
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/register`, {
                 method: 'POST',
@@ -37,7 +36,7 @@ const Register = () => {
                 },
                 body: JSON.stringify({
                     username: username,
-                    password: hashedPassword,
+                    password: password,
                     email: email,
                     avatar: avatar,
                     csrfToken: csrfToken
@@ -108,4 +107,4 @@ const Register = () => {
     );
 };
 
-export default Register;
+export default Register;  

@@ -94,13 +94,6 @@ const Chat = () => {
 
     return (
         <div className="container mt-5" style={{ position: 'relative' }}>
-            {user && (
-                <div className="user-info mb-4">
-                    <h3>Logged in as: {user.username}</h3>
-                    {user.avatar && <img src={user.avatar} alt="Avatar" style={{ width: '100px', height: '100px' }} />}
-                    <button className="btn btn-danger mt-2" onClick={logout}>Logout</button>
-                </div>
-            )}
             <h2>Chat</h2>
             <div className="mb-3">
                 <input

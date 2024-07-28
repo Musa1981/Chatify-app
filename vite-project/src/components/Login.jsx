@@ -2,7 +2,8 @@ import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import CryptoJS from 'crypto-js';
+import { jwtDecode } from 'jwt-decode';
+
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -18,22 +19,28 @@ const Login = () => {
 
     const handleLogin = async () => {
         try {
-            const hashedPassword = CryptoJS.SHA256(password).toString();
-
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/token`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password: hashedPassword, csrfToken }),
+                body: JSON.stringify({ username, password, csrfToken }),
             });
 
             const data = await response.json();
             if (!response.ok) {
                 setMessage(data.error);
             } else {
-                console.log("User data from API:", data.user); // Logga användarobjektet från API
-                login(data.user, data.token);
+                const decoded = jwtDecode(data.token);
+                console.log('Decoded JWT:', decoded);
+                const user = {
+                    id: decoded.id,
+                    username: decoded.username,
+                    avatar: decoded.avatar,
+                    email: decoded.email
+                };
+                console.log('Constructed User Object:', user);
+                login(user, data.token);
                 setMessage('Login successful');
             }
         } catch (error) {
@@ -41,6 +48,7 @@ const Login = () => {
             setMessage(error.message);
         }
     };
+
 
     return (
         <div className="container mt-5">

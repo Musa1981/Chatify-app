@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
         try {
             const storedUser = localStorage.getItem('user');
-            console.log("Stored User:", storedUser); // Log user from localStorage
+            console.log("Stored User:", storedUser);
             return storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null;
         } catch (error) {
             console.error('Error parsing user data from localStorage:', error);
@@ -18,12 +18,13 @@ export const AuthProvider = ({ children }) => {
     const [csrfToken, setCsrfToken] = useState(sessionStorage.getItem('csrf'));
     const navigate = useNavigate();
 
+
     useEffect(() => {
         if (token) {
             localStorage.setItem('token', token);
             if (user) {
                 localStorage.setItem('user', JSON.stringify(user));
-                console.log("User saved to localStorage:", user); // Log user save to localStorage
+                console.log("User saved to localStorage:", user);
             }
         } else {
             localStorage.removeItem('token');
@@ -50,7 +51,11 @@ export const AuthProvider = ({ children }) => {
     };
 
     const login = (user, token) => {
-        console.log("Logging in with user:", user); // Log user at login
+        if (!user.id) {
+            console.error("User object is missing 'id' field:", user);
+            throw new Error("User object is missing 'id' field.");
+        }
+
         setToken(token);
         setUser(user);
         localStorage.setItem('user', JSON.stringify(user));
@@ -102,6 +107,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+
     const fetchUser = async (userId) => {
         try {
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${userId}`, {
@@ -110,7 +116,9 @@ export const AuthProvider = ({ children }) => {
                 },
             });
             if (!response.ok) throw new Error('Failed to fetch user');
-            return response.json();
+            const fetchedUser = await response.json();
+            console.log('Fetched user:', fetchedUser);
+            return fetchedUser;
         } catch (error) {
             console.error("Error fetching user:", error);
             throw error;
@@ -133,14 +141,16 @@ export const AuthProvider = ({ children }) => {
             if (!response.ok) throw new Error('Failed to update user');
             const updatedUser = await response.json();
             setUser(updatedUser);
-            localStorage.setItem('user', JSON.stringify(updatedUser));  // Update localStorage
-            console.log("User updated in localStorage:", updatedUser); // Log updated user
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            console.log("User updated in localStorage:", updatedUser);
             return updatedUser;
         } catch (error) {
             console.error("Error updating user:", error);
             throw error;
         }
     };
+
+
 
     const deleteUser = async (userId) => {
         try {
