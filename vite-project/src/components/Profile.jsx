@@ -71,44 +71,46 @@ const Profile = () => {
     };
 
     return (
-        <div className="container mt-5">
-            <div className="content">
-                <h2>Profile</h2>
-                {avatar && <img src={avatar} alt={`${username}'s avatar`} style={{ maxWidth: '100px', marginTop: '10px' }} />}
-                <div className="mb-3">
-                    <label htmlFor="username" className="form-label">Username</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
+        <div className="profile-component">
+            <div className="container mt-5">
+                <div className="content">
+                    <h2>Profile</h2>
+                    {avatar && <img src={avatar} alt={`${username}'s avatar`} style={{ maxWidth: '100px', marginTop: '10px' }} />}
+                    <div className="mb-3">
+                        <label htmlFor="username" className="form-label">Username</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="email" className="form-label">Email</label>
+                        <input
+                            type="email"
+                            className="form-control"
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="avatar" className="form-label">Avatar URL</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="avatar"
+                            value={newAvatar}
+                            onChange={handleAvatarChange}
+                        />
+                        {newAvatar && <img src={newAvatar} alt="New Avatar Preview" style={{ maxWidth: '100px', marginTop: '10px' }} />}
+                    </div>
+                    <button className="btn btn-primary" onClick={handleUpdateUser}>Update Profile</button>
+                    <button className="btn btn-danger mt-2" onClick={handleDeleteUser}>Delete Account</button>
+                    {message && <div className="alert alert-info mt-3">{message}</div>}
                 </div>
-                <div className="mb-3">
-                    <label htmlFor="email" className="form-label">Email</label>
-                    <input
-                        type="email"
-                        className="form-control"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="avatar" className="form-label">Avatar URL</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="avatar"
-                        value={newAvatar}
-                        onChange={handleAvatarChange}
-                    />
-                    {newAvatar && <img src={newAvatar} alt="New Avatar Preview" style={{ maxWidth: '100px', marginTop: '10px' }} />}
-                </div>
-                <button className="btn btn-primary" onClick={handleUpdateUser}>Update Profile</button>
-                <button className="btn btn-danger mt-2" onClick={handleDeleteUser}>Delete Account</button>
-                {message && <div className="alert alert-info mt-3">{message}</div>}
             </div>
         </div>
     );

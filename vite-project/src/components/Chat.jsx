@@ -93,30 +93,32 @@ const Chat = () => {
     };
 
     return (
-        <div className="container mt-5" style={{ position: 'relative' }}>
-            <h2>Chat</h2>
-            <div className="mb-3">
-                <input
-                    type="text"
-                    className="form-control"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type your message..."
-                />
-                <button className="btn btn-primary mt-2" onClick={handleCreateMessage}>Send</button>
-                {error && <div className="alert alert-danger mt-2">{error}</div>}
+        <div className="chat-component">
+            <div className="container mt-5" style={{ position: 'relative' }}>
+                <h2>Chat</h2>
+                <div className="mb-3">
+                    <input
+                        type="text"
+                        className="form-control"
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="Type your message..."
+                    />
+                    <button className="btn btn-primary mt-2" onClick={handleCreateMessage}>Send</button>
+                    {error && <div className="alert alert-danger mt-2">{error}</div>}
+                </div>
+                <ul className="list-group">
+                    {messages.map(msg => (
+                        <li
+                            key={msg.id}
+                            className="list-group-item d-flex justify-content-between align-items-center"
+                        >
+                            <span>{msg.text}</span>
+                            <button className="btn btn-danger" onClick={() => handleDeleteMessage(msg.id)}>Delete</button>
+                        </li>
+                    ))}
+                </ul>
             </div>
-            <ul className="list-group">
-                {messages.map(msg => (
-                    <li
-                        key={msg.id}
-                        className="list-group-item d-flex justify-content-between align-items-center"
-                    >
-                        <span>{msg.text}</span>
-                        <button className="btn btn-danger" onClick={() => handleDeleteMessage(msg.id)}>Delete</button>
-                    </li>
-                ))}
-            </ul>
         </div>
     );
 };
