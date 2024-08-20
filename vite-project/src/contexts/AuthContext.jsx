@@ -125,7 +125,9 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+
     const updateUser = async (user) => {
+        console.log("Starting updateUser with data:", user);
         try {
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}/user`, {
                 method: 'PUT',
@@ -138,17 +140,27 @@ export const AuthProvider = ({ children }) => {
                     updatedData: user
                 }),
             });
-            if (!response.ok) throw new Error('Failed to update user');
+
+            if (!response.ok) {
+                throw new Error('Failed to update user');
+            }
+
             const updatedUser = await response.json();
+            console.log("Updated user from server:", updatedUser);
+
+            // Update the user state and localStorage
             setUser(updatedUser);
             localStorage.setItem('user', JSON.stringify(updatedUser));
             console.log("User updated in localStorage:", updatedUser);
+
             return updatedUser;
         } catch (error) {
             console.error("Error updating user:", error);
             throw error;
         }
     };
+
+
 
 
 
