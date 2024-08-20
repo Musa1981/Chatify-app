@@ -15,7 +15,7 @@ const Chat = () => {
 
     const fetchMessages = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/messages?conversationId=${conversationId}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/messages?conversationId=48a54c49-c25e-493d-ba77-66e834e713d8`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -31,17 +31,10 @@ const Chat = () => {
     };
 
     useEffect(() => {
-        if (token && conversationId) {
-            fetchMessages();
-        }
-    }, [token, conversationId]);
-
-    useEffect(() => {
         if (user && token) {
             console.log("User object:", user);
-            // Sätt conversationId från användarens inbjudningar
             if (user.invites && user.invites.length > 0) {
-                setConversationId(user.invites[0]); // Ta första inbjudan som standard
+                setConversationId(user.invites[0]);
             }
             fetchMessages();
         }
@@ -111,13 +104,14 @@ const Chat = () => {
                 return;
             }
 
+            const conversationId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? Math.floor(Math.random() * 16) : (Math.floor(Math.random() * 4) + 8)).toString(16));
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}/invite/${inviteUserId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ conversationId })
+                body: JSON.stringify({ conversationId: conversationId })
             });
 
             if (!response.ok) {
@@ -137,7 +131,7 @@ const Chat = () => {
 
     return (
         <div className="chat-component">
-            <div className="container mt-5" style={{ position: 'relative' }}>
+            <div className="container mt-5" style={{ position: 'relative', maxWidth: '800px' }}>
                 <h2>Chat</h2>
                 <div className="mb-3">
                     <input
@@ -169,12 +163,35 @@ const Chat = () => {
                     {messages.map(msg => (
                         <li
                             key={msg.id}
-                            className={`list-group-item d-flex justify-content-${msg.userId === user.id ? 'end' : 'start'} align-items-center`}
-                            style={{ textAlign: msg.userId === user.id ? 'right' : 'left' }}
+                            className={`list-group-item d-flex ${msg.userId === user.id ? 'justify-content-end' : 'justify-content-start'} align-items-center`}
+                            style={{
+                                textAlign: msg.userId === user.id ? 'right' : 'left',
+                                backgroundColor: msg.userId === user.id ? '#d1e7dd' : '#f8d7da',
+                                borderRadius: '10px',
+                                marginBottom: '10px',
+                                maxWidth: '85%',
+                                alignSelf: msg.userId === user.id ? 'flex-end' : 'flex-start',
+                            }}
                         >
+                            {msg.userId !== user.id && (
+                                <img
+                                    src={msg.avatar || '/default-avatar.png'}
+                                    alt="Avatar"
+                                    className="rounded-circle mr-2"
+                                    style={{ width: '40px', height: '40px' }}
+                                />
+                            )}
                             <span>{msg.text}</span>
                             {msg.userId === user.id && (
-                                <button className="btn btn-danger ml-2" onClick={() => handleDeleteMessage(msg.id)}>Delete</button>
+                                <>
+                                    <img
+                                        src={user.avatar || '/default-avatar.png'}
+                                        alt="Avatar"
+                                        className="rounded-circle ml-2"
+                                        style={{ width: '40px', height: '40px' }}
+                                    />
+                                    <button className="btn btn-danger ml-2" onClick={() => handleDeleteMessage(msg.id)}>Delete</button>
+                                </>
                             )}
                         </li>
                     ))}

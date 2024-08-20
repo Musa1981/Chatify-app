@@ -35,7 +35,7 @@ const Login = () => {
                 console.log('Decoded JWT:', decoded);
                 const user = {
                     id: decoded.id,
-                    username: decoded.username,
+                    username: decoded.user,
                     avatar: decoded.avatar,
                     email: decoded.email
                 };

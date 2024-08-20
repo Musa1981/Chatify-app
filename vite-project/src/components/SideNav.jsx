@@ -12,7 +12,7 @@ const SideNav = () => {
     return (
 
         <div className="side-nav d-flex flex-column p-3" >
-            <h4 className="mb-4">Navigation</h4>
+
             < Profile />
             <ul className="nav flex-column">
                 <li className="nav-item mb-3">

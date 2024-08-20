@@ -13,14 +13,7 @@ const Profile = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // if (user) {
-        //     console.log('User object:', user);
-        //     setUsername(user.username || '');
-        //     setEmail(user.email || '');
-        //     setAvatar(user.avatar || '');
-        // } else {
-        //     console.warn('No user found in context');
-        // }
+
         const decodedJwt = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
         setUsername(decodedJwt.user || '');
         setEmail(decodedJwt.email || '');

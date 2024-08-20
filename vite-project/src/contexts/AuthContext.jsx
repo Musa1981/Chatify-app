@@ -148,7 +148,6 @@ export const AuthProvider = ({ children }) => {
             const updatedUser = await response.json();
             console.log("Updated user from server:", updatedUser);
 
-            // Update the user state and localStorage
             setUser(updatedUser);
             localStorage.setItem('user', JSON.stringify(updatedUser));
             console.log("User updated in localStorage:", updatedUser);
@@ -159,9 +158,6 @@ export const AuthProvider = ({ children }) => {
             throw error;
         }
     };
-
-
-
 
 
     const deleteUser = async (userId) => {

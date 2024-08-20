@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import Register from './components/Register';
 import Login from './components/Login';
 import Chat from './components/Chat';
@@ -45,6 +46,7 @@ const App = () => {
                     <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
             </div>
+            <ToastContainer />
         </div>
     );
 };
