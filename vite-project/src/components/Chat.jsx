@@ -14,8 +14,8 @@ const Chat = () => {
     const { user, token, csrfToken, logout } = useContext(AuthContext);
 
     const fetchMessages = async () => {
-        const url = conversationId ? `${import.meta.env.VITE_BASE_URL}/messages?conversationId=${conversationId}`
-            : `${import.meta.env.VITE_BASE_URL}/messages`;
+        const url = conversationId ? `${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/messages?conversationId=${conversationId}`
+            : `${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/messages`;
         try {
             const response = await fetch(url, {
                 method: 'GET',
@@ -51,7 +51,7 @@ const Chat = () => {
 
             const sanitizedMessage = DOMPurify.sanitize(newMessage);
 
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/messages`, {
+            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/messages`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -80,7 +80,7 @@ const Chat = () => {
 
     const handleDeleteMessage = async (msgId) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/messages/${msgId}`, {
+            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/messages/${msgId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -107,7 +107,7 @@ const Chat = () => {
             }
 
             const conversationId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? Math.floor(Math.random() * 16) : (Math.floor(Math.random() * 4) + 8)).toString(16));
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/invite/${inviteUserId}`, {
+            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/invite/${inviteUserId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

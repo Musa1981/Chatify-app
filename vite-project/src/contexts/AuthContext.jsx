@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
     const fetchCsrfToken = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/csrf`, {
+            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/csrf`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
 
     const registerUser = async (username, password) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/register`, {
+            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
 
     const generateToken = async (username, password) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/token`, {
+            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/auth/token`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -110,7 +110,7 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUser = async (userId) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${userId}`, {
+            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/users/${userId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -129,7 +129,7 @@ export const AuthProvider = ({ children }) => {
     const updateUser = async (user) => {
         console.log("Starting updateUser with data:", user);
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/user`, {
+            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/user`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -162,7 +162,7 @@ export const AuthProvider = ({ children }) => {
 
     const deleteUser = async (userId) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${userId}`, {
+            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/users/${userId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
