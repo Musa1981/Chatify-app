@@ -14,7 +14,7 @@ const Profile = () => {
 
     useEffect(() => {
 
-        const decodedJwt = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
+        const decodedJwt = JSON.parse(atob(localStorage.getItem('token').split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
         setUsername(decodedJwt.user || '');
         setEmail(decodedJwt.email || '');
         setAvatar(decodedJwt.avatar || '');

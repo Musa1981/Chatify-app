@@ -14,8 +14,10 @@ const Chat = () => {
     const { user, token, csrfToken, logout } = useContext(AuthContext);
 
     const fetchMessages = async () => {
+        const url = conversationId ? `${import.meta.env.VITE_BASE_URL}/messages?conversationId=${conversationId}`
+            : `${import.meta.env.VITE_BASE_URL}/messages`;
         try {
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/messages?conversationId=48a54c49-c25e-493d-ba77-66e834e713d8`, {
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -131,16 +133,30 @@ const Chat = () => {
 
     return (
         <div className="chat-component">
-            <div className="container mt-5" style={{ position: 'relative', maxWidth: '800px' }}>
+            <div className="container mt-5" style={{ position: 'relative', maxWidth: '100%' }}>
                 <h2>Chat</h2>
                 <div className="mb-3">
-                    <input
-                        type="text"
-                        className="form-control"
-                        value={conversationId}
-                        onChange={(e) => setConversationId(e.target.value)}
-                        placeholder="Enter Conversation ID"
-                    />
+                    <div className="input-group mb-3">
+                        <input
+                            type="text"
+                            className="form-control"
+                            value={conversationId}
+                            onChange={(e) => setConversationId(e.target.value)}
+                            placeholder="Enter Conversation ID"
+                        />
+                        <div className="input-group-append">
+                            <button
+                                disabled={!/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(conversationId)}
+                                onClick={fetchMessages}
+                                className="btn btn-primary mt-2"
+                                style={{ borderRadius: '0' }}
+                                type="button"
+                            >
+                                Update chat 💬
+                            </button>
+                        </div>
+                    </div>
+
                     <input
                         type="text"
                         className="form-control mt-2"
@@ -202,3 +218,4 @@ const Chat = () => {
 };
 
 export default Chat;
+

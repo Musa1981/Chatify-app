@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+/*import React, { useContext } from "react";
 import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthContext } from '../contexts/AuthContext';
@@ -29,5 +29,50 @@ const SideNav = () => {
 
 };
 
+export default SideNav; */
+import React, { useState, useContext } from "react";
+import { Link } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext';
+import Profile from "./Profile";
+
+const SideNav = () => {
+    const { logout } = useContext(AuthContext);
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsOpen(!isOpen);
+    };
+
+    const handleLogout = () => {
+        logout();
+    };
+
+    return (
+        <>
+            <button className="hamburger-btn" onClick={toggleMenu}>
+                ☰
+            </button>
+
+            <div className={`side-nav ${isOpen ? 'open' : ''}`}>
+                <Profile />
+                <ul className="nav flex-column">
+                    <li className="nav-item mb-3">
+                        <Link to="/user-management" className="nav-link" onClick={toggleMenu}>Manage Users</Link>
+                    </li>
+                    <li className="nav-item mb-3">
+                        <Link to="/chat" className="nav-link" onClick={toggleMenu}>Chat</Link>
+                    </li>
+                </ul>
+                <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
+            </div>
+
+            {isOpen && <div className="overlay active" onClick={toggleMenu}></div>}
+        </>
+    );
+};
+
 export default SideNav;
+
+
+
 
