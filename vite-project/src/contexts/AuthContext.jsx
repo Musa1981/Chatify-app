@@ -1,10 +1,14 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Skapar en Context för autentisering som kan användas i hela applikationen.
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+    // State för att lagra JWT-token från localStorage.
     const [token, setToken] = useState(localStorage.getItem('token'));
+
+    // State för att lagra användaruppgifter. Försöker hämta och parsa användardata från localStorage.
     const [user, setUser] = useState(() => {
         try {
             const storedUser = localStorage.getItem('user');
@@ -15,10 +19,14 @@ export const AuthProvider = ({ children }) => {
             return null;
         }
     });
+
+    // State för att lagra CSRF-token från sessionStorage.
     const [csrfToken, setCsrfToken] = useState(sessionStorage.getItem('csrf'));
+
+    // Används för att navigera mellan olika rutter.
     const navigate = useNavigate();
 
-
+    // Effekt som körs när `token` eller `user` ändras, för att uppdatera localStorage med den senaste informationen.
     useEffect(() => {
         if (token) {
             localStorage.setItem('token', token);
@@ -32,6 +40,7 @@ export const AuthProvider = ({ children }) => {
         }
     }, [token, user]);
 
+    // Funktion för att hämta CSRF-token från servern och lagra den i sessionStorage.
     const fetchCsrfToken = async () => {
         try {
             const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/csrf`, {
@@ -50,6 +59,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Funktion för att logga in användaren, uppdatera state och lagra användarens information i localStorage.
     const login = (user, token) => {
         if (!user.id) {
             console.error("User object is missing 'id' field:", user);
@@ -60,17 +70,19 @@ export const AuthProvider = ({ children }) => {
         setUser(user);
         localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('token', token);
-        navigate('/chat');
+        navigate('/chat');  // Navigerar användaren till chattsidan efter inloggning.
     };
 
+    // Funktion för att logga ut användaren, rensa state och ta bort användarens information från localStorage.
     const logout = () => {
         setToken(null);
         setUser(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        navigate('/login');
+        navigate('/login');  // Navigerar användaren till inloggningssidan efter utloggning.
     };
 
+    // Funktion för att registrera en ny användare.
     const registerUser = async (username, password) => {
         try {
             const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/auth/register`, {
@@ -88,6 +100,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Funktion för att generera en JWT-token vid inloggning.
     const generateToken = async (username, password) => {
         try {
             const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/auth/token`, {
@@ -107,7 +120,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-
+    // Funktion för att hämta användaruppgifter från servern baserat på användar-ID.
     const fetchUser = async (userId) => {
         try {
             const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/users/${userId}`, {
@@ -125,7 +138,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-
+    // Funktion för att uppdatera användaruppgifter på servern.
     const updateUser = async (user) => {
         console.log("Starting updateUser with data:", user);
         try {
@@ -159,7 +172,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-
+    // Funktion för att radera en användare från servern baserat på användar-ID.
     const deleteUser = async (userId) => {
         try {
             const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/users/${userId}`, {
@@ -177,10 +190,12 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Effekt som körs när komponenten laddas för att hämta CSRF-token.
     useEffect(() => {
         fetchCsrfToken();
     }, []);
 
+    // Tillhandahåller all autentiseringsrelaterad state och funktioner till komponentens barn.
     return (
         <AuthContext.Provider value={{
             token,
