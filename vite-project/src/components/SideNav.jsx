@@ -30,16 +30,17 @@ const SideNav = () => {
 
 
                 <ul className="nav flex-column">
-                    {/* Lista med navigeringslänkar */}
+
                     <li className="nav-item mb-3">
-                        <Link to="/user-management" className="nav-link" onClick={toggleMenu}>Manage Users</Link>
-                        {/* Länk till användarhanteringssidan */}
+                        <Link to="/user-management" className="btn btn-primary w-100" onClick={toggleMenu}>Manage Users</Link>
+
                     </li>
                     <li className="nav-item mb-3">
-                        <Link to="/chat" className="nav-link" onClick={toggleMenu}>Chat</Link>
-                        {/* Länk till chatt-sidan */}
+                        <Link to="/chat" className="btn btn-primary w-100" onClick={toggleMenu}>Chat</Link>
+
                     </li>
                 </ul>
+
 
                 <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
 
