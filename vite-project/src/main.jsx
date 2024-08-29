@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './App'; // Importerar huvudapplikationskomponenten
-import 'bootstrap/dist/css/bootstrap.min.css'; // Importerar Bootstrap CSS för styling
+import App from './App';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthProvider } from './contexts/AuthContext'; // Importerar AuthProvider för att ge autentiseringstillgång till hela appen
 import { BrowserRouter as Router } from 'react-router-dom'; // Importerar BrowserRouter för routing
 

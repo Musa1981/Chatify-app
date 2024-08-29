@@ -85,7 +85,7 @@ const Login = () => {
                 />
             </div>
             <button className="btn btn-primary" onClick={handleLogin}>Login</button>
-            <Link to="/*">Home</Link>
+            <Link to='/*' className="btn btn-success">Home</Link>
             {message && <div className="mt-3 alert alert-info">{message}</div>} {/* Visa ett meddelande om något finns i `message` */}
 
             {user && ( // Visa användarinformation om användaren är inloggad
