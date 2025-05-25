@@ -1,4 +1,19 @@
-/* Hamburger-knappens stil */
+body,
+html,
+#root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: linear-gradient(to right, #e0eafc, #cfdef3);
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+
 .hamburger-btn {
     position: fixed;
     top: 10px;
@@ -10,7 +25,7 @@
     z-index: 1100;
 }
 
-/* Side-nav stil */
+
 .side-nav {
     position: fixed;
     top: 0;
@@ -29,7 +44,7 @@
     left: 0;
 }
 
-/* Overlay som täcker sidan när menyn är öppen */
+
 .overlay {
     position: fixed;
     top: 0;
@@ -45,7 +60,7 @@
     display: block;
 }
 
-/* Justeringar för mindre skärmar */
+/* Responsiv menyjustering */
 @media (max-width: 375px) {
     .hamburger-btn {
         font-size: 20px;
@@ -62,72 +77,111 @@
     }
 }
 
-/* Grundläggande profil-komponentens stil i menyn */
+/* Profilkomponent i menyn */
 .profile-component {
     margin-bottom: 20px;
     color: white;
 }
 
-/* Styling för chat-komponenten */
 .chat-component {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    /* Full höjd av viewporten */
     padding: 20px;
     box-sizing: border-box;
 }
 
-/* Container för meddelanden med rullning */
+
 .messages-container {
     flex: 1;
     overflow-y: auto;
-    /* Gör att meddelandena kan rullas om de är för många */
     padding: 10px;
     border: 1px solid #dee2e6;
-    /* För att separera meddelandeområdet */
     border-radius: 10px;
     background-color: #f8f9fa;
     margin-bottom: 20px;
-    /* Utrymme mellan meddelandeområdet och skicka-knappen */
+    scroll-behavior: smooth;
 }
 
-/* Styling för meddelanden */
+
 .list-group-item {
     border: none;
-    border-radius: 10px;
-    margin-bottom: 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    padding: 10px 15px;
     max-width: 85%;
+    word-wrap: break-word;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    animation: fadeInUp 0.3s ease-out;
 }
 
-/* Styling för meddelanden från andra användare */
-.list-group-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-}
 
-/* Styling för meddelanden från användaren */
 .list-group-item.user-message {
-    background-color: #d1e7dd;
+    background-color: #0d6efd;
+    color: white;
     align-self: flex-end;
+    border-bottom-right-radius: 4px;
 }
 
-/* Styling för meddelanden från andra användare */
+
 .list-group-item.other-message {
-    background-color: #f8d7da;
+    background-color: #e9ecef;
+    color: #212529;
     align-self: flex-start;
+    border-bottom-left-radius: 4px;
 }
 
-/* Styling för avatars */
+
 .rounded-circle {
     border: 2px solid #fff;
     width: 40px;
     height: 40px;
 }
 
-/* Knapp för att radera meddelanden */
+
 .btn-danger {
     margin-left: 10px;
+}
+
+/* Fade in animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-wrapper {
+    min-height: 100vh;
+    background: url('/9199946c-87e0-434f-a587-8b704e3d273a.png') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+
+    border-radius: 16px;
+}
+
+.avatar-option:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease-in-out;
+}
+
+.avatar-scroll {
+    scroll-snap-type: x mandatory;
+    padding-bottom: 10px;
+}
+
+.avatar-scroll img {
+    scroll-snap-align: center;
 }

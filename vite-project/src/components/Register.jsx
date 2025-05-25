@@ -1,9 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthContext } from '../contexts/AuthContext';
-import { Link } from 'react-router-dom';
-
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -22,33 +20,31 @@ const Register = () => {
 
     const handleRegister = async () => {
         if (!csrfToken) {
-            setMessage('CSRF token is missing');
+            setMessage('CSRF token saknas');
             return;
         }
 
         try {
-
-
             const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    username: username,
-                    password: password,
-                    email: email,
-                    avatar: avatar,
-                    csrfToken: csrfToken
+                    username,
+                    password,
+                    email,
+                    avatar,
+                    csrfToken
                 }),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                setMessage(data.error);
+                setMessage(data.error || 'Registreringen misslyckades');
             } else {
-                setMessage('Registration successful');
+                setMessage('Registrering lyckades!');
                 setTimeout(() => navigate('/login'), 2000);
             }
         } catch (error) {
@@ -57,54 +53,82 @@ const Register = () => {
         }
     };
 
+    const avatarUrls = Array.from({ length: 9 }, (_, i) => `https://i.pravatar.cc/158?img=${i + 1}`);
+
     return (
         <div className="container mt-5">
-            <h2>Register</h2>
+            <h2 className="mb-4 text-center">Skapa konto</h2>
+
             <div className="mb-3">
-                <label htmlFor="username" className="form-label">Username</label>
+                <label className="form-label">Användarnamn</label>
                 <input
                     type="text"
                     className="form-control"
-                    id="username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
             </div>
+
             <div className="mb-3">
-                <label htmlFor="password" className="form-label">Password</label>
+                <label className="form-label">Lösenord</label>
                 <input
                     type="password"
                     className="form-control"
-                    id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
             </div>
+
             <div className="mb-3">
-                <label htmlFor="email" className="form-label">Email</label>
+                <label className="form-label">E-post</label>
                 <input
                     type="email"
                     className="form-control"
-                    id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
-            <div className="mb-3">
-                <label htmlFor="avatar" className="form-label">Avatar URL</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    id="avatar"
-                    value={avatar}
-                    onChange={(e) => setAvatar(e.target.value)}
-                />
+
+            <div className="mb-3 text-center">
+                <label className="form-label">Vald avatar</label><br />
+                {avatar && (
+                    <img
+                        src={avatar}
+                        alt="Vald avatar"
+                        className="rounded-circle border border-primary border-3 mb-3"
+                        style={{ width: "120px", height: "120px" }}
+                    />
+                )}
             </div>
-            <button className="btn btn-primary" onClick={handleRegister}>Register</button>
-            <Link to='/*' className="btn btn-success">Home</Link>
-            {message && <div className="mt-3 alert alert-info">{message}</div>}
+
+            <div className="mb-3">
+                <label className="form-label">Välj en avatar</label>
+                <div className="avatar-scroll d-flex overflow-auto gap-3">
+                    {avatarUrls.map((img, index) => (
+                        <img
+                            key={index}
+                            src={img}
+                            alt={`Avatar ${index + 1}`}
+                            className={`rounded-circle avatar-option ${avatar === img ? "border border-primary border-3" : "border"
+                                }`}
+                            style={{ width: "80px", height: "80px", cursor: "pointer" }}
+                            onClick={() => setAvatar(img)}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            <button className="btn btn-primary mt-3 w-100" onClick={handleRegister}>
+                Registrera
+            </button>
+            <Link to="/login" className="btn btn-outline-secondary mt-2 w-100">
+                Redan medlem? Logga in
+            </Link>
+
+            {message && <div className="alert alert-info mt-3">{message}</div>}
         </div>
     );
+
 };
 
-export default Register;  
+export default Register;
