@@ -71,54 +71,80 @@ const Profile = () => {
     };
 
     return (
-        <div className="profile-component">
-            <div className="container mt-5">
-                <div className="content">
-                    <h2>Profile</h2>
-                    {avatar && <img src={avatar} alt={`${username}'s avatar`} style={{ maxWidth: '100px', marginTop: '10px' }} />}
-                    {/* Visar nuvarande avatar om den finns */}
-                    <div className="mb-3">
-                        <label htmlFor="username" className="form-label">Username</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)} // Uppdaterar användarnamnet i state när användaren skriver
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="email" className="form-label">Email</label>
-                        <input
-                            type="email"
-                            className="form-control"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)} // Uppdaterar e-postadressen i state när användaren skriver
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="avatar" className="form-label">Avatar URL</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="avatar"
-                            value={newAvatar}
-                            onChange={handleAvatarChange} // Uppdaterar avatar-URL:n i state när användaren skriver
-                        />
-                        {newAvatar && <img src={newAvatar} alt="New Avatar Preview" style={{ maxWidth: '100px', marginTop: '10px' }} />}
-                        {/* Visar en förhandsvisning av den nya avatar-URL:n om den finns */}
-                    </div>
-                    <button className="btn btn-primary" onClick={handleUpdateUser}>Update Profile</button>
-                    {/* Knappar för att uppdatera profilen */}
-                    <button className="btn btn-danger mt-2" onClick={handleDeleteUser}>Delete Account</button>
-                    {/* Knappar för att radera kontot */}
-                    {message && <div className="alert alert-info mt-3">{message}</div>}
-                    {/* Visar ett meddelande om det finns något */}
+        <div className="container py-5">
+            <div className="card shadow-lg p-4 text-center">
+                <h2 className="mb-4">Din profil</h2>
+
+                {avatar && (
+                    <img
+                        src={avatar}
+                        alt="Profilbild"
+                        className="rounded-circle mb-3 border border-3 border-primary"
+                        style={{ width: "120px", height: "120px", objectFit: "cover" }}
+                    />
+                )}
+
+                <div className="mb-3">
+                    <label className="form-label">Användarnamn</label>
+                    <input
+                        type="text"
+                        className="form-control text-center"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
                 </div>
+
+                <div className="mb-3">
+                    <label className="form-label">E-post</label>
+                    <input
+                        type="email"
+                        className="form-control text-center"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Uppdatera avatar</label>
+                    <input
+                        type="text"
+                        className="form-control text-center"
+                        value={newAvatar}
+                        onChange={(e) => setNewAvatar(e.target.value)}
+                        placeholder="Klistra in ny avatar-URL här"
+                    />
+                </div>
+
+                <div className="d-grid gap-2 mt-4">
+                    <button
+                        className="btn btn-outline-primary"
+                        onClick={() => updateUser(username, email, newAvatar || avatar)}
+                    >
+                        Uppdatera profil
+                    </button>
+
+                    <button
+                        className="btn btn-outline-danger"
+                        onClick={() => {
+                            if (window.confirm("Vill du verkligen ta bort ditt konto?")) {
+                                deleteUser();
+                                navigate('/');
+                            }
+                        }}
+                    >
+                        Radera konto
+                    </button>
+
+                    <button className="btn btn-secondary" onClick={logout}>
+                        Logga ut
+                    </button>
+                </div>
+
+                {message && <div className="alert alert-info mt-3">{message}</div>}
             </div>
         </div>
     );
+
 };
 
 export default Profile;

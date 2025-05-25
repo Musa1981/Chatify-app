@@ -13,7 +13,6 @@ body {
     background-attachment: fixed;
 }
 
-
 .hamburger-btn {
     position: fixed;
     top: 10px;
@@ -24,7 +23,6 @@ body {
     color: #343a40;
     z-index: 1100;
 }
-
 
 .side-nav {
     position: fixed;
@@ -60,7 +58,7 @@ body {
     display: block;
 }
 
-/* Responsiv menyjustering */
+
 @media (max-width: 375px) {
     .hamburger-btn {
         font-size: 20px;
@@ -77,12 +75,13 @@ body {
     }
 }
 
-/* Profilkomponent i menyn */
+/* Profilkomponent */
 .profile-component {
     margin-bottom: 20px;
     color: white;
 }
 
+/* Chatt */
 .chat-component {
     display: flex;
     flex-direction: column;
@@ -90,7 +89,6 @@ body {
     padding: 20px;
     box-sizing: border-box;
 }
-
 
 .messages-container {
     flex: 1;
@@ -103,7 +101,6 @@ body {
     scroll-behavior: smooth;
 }
 
-
 .list-group-item {
     border: none;
     border-radius: 20px;
@@ -115,14 +112,12 @@ body {
     animation: fadeInUp 0.3s ease-out;
 }
 
-
 .list-group-item.user-message {
     background-color: #0d6efd;
     color: white;
     align-self: flex-end;
     border-bottom-right-radius: 4px;
 }
-
 
 .list-group-item.other-message {
     background-color: #e9ecef;
@@ -131,19 +126,7 @@ body {
     border-bottom-left-radius: 4px;
 }
 
-
-.rounded-circle {
-    border: 2px solid #fff;
-    width: 40px;
-    height: 40px;
-}
-
-
-.btn-danger {
-    margin-left: 10px;
-}
-
-/* Fade in animation */
+/* Fade in */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -155,6 +138,7 @@ body {
         transform: translateY(0);
     }
 }
+
 
 .login-wrapper {
     min-height: 100vh;
@@ -168,8 +152,27 @@ body {
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-
     border-radius: 16px;
+}
+
+.avatar-scroll {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    height: 100px;
+    margin-bottom: 1rem;
+}
+
+.avatar-scroll-inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: max-content;
+    animation: scrollAvatars 30s linear infinite;
+}
+
+.avatar-scroll:hover .avatar-scroll-inner {
+    animation-play-state: paused;
 }
 
 .avatar-option:hover {
@@ -177,11 +180,49 @@ body {
     transition: transform 0.2s ease-in-out;
 }
 
-.avatar-scroll {
-    scroll-snap-type: x mandatory;
-    padding-bottom: 10px;
-}
-
 .avatar-scroll img {
     scroll-snap-align: center;
+}
+
+/* Loopande animation */
+@keyframes scrollAvatars {
+    0% {
+        transform: translateX(0%);
+    }
+
+    100% {
+        transform: translateX(-33.333%);
+    }
+}
+
+
+
+.rounded-circle {
+    border: 2px solid #fff;
+    width: 40px;
+    height: 40px;
+}
+
+img.rounded-circle:hover {
+    transform: scale(1.05);
+    transition: all 0.2s ease-in-out;
+}
+
+
+.card.shadow-sm:hover {
+    transform: translateY(-3px);
+    transition: transform 0.2s ease-in-out;
+}
+
+.card img.rounded-circle:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s ease-in-out;
+}
+
+.input-group .btn {
+    min-width: 100px;
+}
+
+.btn-danger {
+    margin-left: 10px;
 }

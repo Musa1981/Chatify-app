@@ -25,19 +25,22 @@ const Register = () => {
         }
 
         try {
-            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/auth/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username,
-                    password,
-                    email,
-                    avatar,
-                    csrfToken
-                }),
-            });
+            const response = await fetch(
+                `${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/auth/register`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username,
+                        password,
+                        email,
+                        avatar,
+                        csrfToken,
+                    }),
+                }
+            );
 
             const data = await response.json();
 
@@ -48,7 +51,7 @@ const Register = () => {
                 setTimeout(() => navigate('/login'), 2000);
             }
         } catch (error) {
-            console.error("Registration error:", error);
+            console.error('Registration error:', error);
             setMessage(error.message);
         }
     };
@@ -89,32 +92,34 @@ const Register = () => {
                 />
             </div>
 
-            <div className="mb-3 text-center">
-                <label className="form-label">Vald avatar</label><br />
-                {avatar && (
+            {avatar && (
+                <div className="text-center mb-3" style={{ minHeight: '150px' }}>
+                    <label className="form-label">Vald avatar</label>
+                    <br />
                     <img
                         src={avatar}
                         alt="Vald avatar"
-                        className="rounded-circle border border-primary border-3 mb-3"
-                        style={{ width: "120px", height: "120px" }}
+                        className="rounded-circle border border-primary border-3"
+                        style={{ width: '120px', height: '120px', objectFit: 'cover' }}
                     />
-                )}
-            </div>
+                </div>
+            )}
 
             <div className="mb-3">
                 <label className="form-label">Välj en avatar</label>
-                <div className="avatar-scroll d-flex overflow-auto gap-3">
-                    {avatarUrls.map((img, index) => (
-                        <img
-                            key={index}
-                            src={img}
-                            alt={`Avatar ${index + 1}`}
-                            className={`rounded-circle avatar-option ${avatar === img ? "border border-primary border-3" : "border"
-                                }`}
-                            style={{ width: "80px", height: "80px", cursor: "pointer" }}
-                            onClick={() => setAvatar(img)}
-                        />
-                    ))}
+                <div className="avatar-scroll">
+                    <div className="avatar-scroll-inner">
+                        {[...avatarUrls, ...avatarUrls].map((img, index) => (
+                            <img
+                                key={index}
+                                src={img}
+                                alt={`Avatar ${index + 1}`}
+                                className={`rounded-circle avatar-option ${avatar === img ? 'border border-primary border-3' : 'border'}`}
+                                style={{ width: '80px', height: '80px', cursor: 'pointer' }}
+                                onClick={() => setAvatar(img)}
+                            />
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -128,7 +133,6 @@ const Register = () => {
             {message && <div className="alert alert-info mt-3">{message}</div>}
         </div>
     );
-
 };
 
 export default Register;
