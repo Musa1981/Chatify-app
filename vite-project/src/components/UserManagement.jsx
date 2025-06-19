@@ -1,116 +1,153 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+/* deterministic fallback avatar */
+const fallbackAvatar = id => `https://i.pravatar.cc/158?u=${id}`;
+
 const UserManagement = () => {
-    const { fetchUser, updateUser, deleteUser, logout } = useContext(AuthContext);
-    const [userId, setUserId] = useState('');
-    const [user, setUser] = useState(null);
-    const [formData, setFormData] = useState({ username: '', email: '', avatar: '' });
-    const [message, setMessage] = useState('');
+    const { user: me, token, fetchUser, updateUser, deleteUser, logout } =
+        useContext(AuthContext);
+
+    const [searchId, setSearchId] = useState('');
+    const [target, setTarget] = useState(null);   // the user we look up
+    const [form, setForm] = useState({ username: '', email: '', avatar: '' });
+    const [msg, setMsg] = useState('');
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (userId.trim()) {
-            fetchUser(userId.trim())
-                .then(data => {
-                    setUser(data);
-                    setFormData({
-                        username: data.username || '',
-                        email: data.email || '',
-                        avatar: data.avatar || ''
-                    });
-                    setMessage('');
-                })
-                .catch(() => setMessage('Kunde inte hämta användaren.'));
+    /* helpers */
+    const flash = txt => {
+        setMsg(txt);
+        setTimeout(() => setMsg(''), 3000);
+    };
+
+    const handleLookup = async () => {
+        if (!searchId.trim()) return flash('Ange ett ID');
+        try {
+            const data = await fetchUser(searchId.trim());
+            setTarget(data);
+            setForm({
+                username: data.username || '',
+                email: data.email || '',
+                avatar: data.avatar || fallbackAvatar(data.id)
+            });
+            flash('');
+        } catch {
+            flash('Kunde inte hämta användaren.');
+            setTarget(null);
         }
-    }, [userId]);
-
-    const handleChange = e => {
-        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
-    const handleUpdate = () => {
-        updateUser({ id: userId, ...formData })
-            .then(data => {
-                setUser(data);
-                setMessage('Användare uppdaterad!');
-            })
-            .catch(() => setMessage('Fel vid uppdatering.'));
+    const handleChange = e =>
+        setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+    const handleUpdate = async () => {
+        try {
+            const updated = await updateUser({ id: target.id, ...form });
+            setTarget(updated);
+            flash('Användare uppdaterad!');
+            /* If you updated yourself, sync avatar in localStorage */
+            if (updated.id === me.id) {
+                localStorage.setItem(
+                    'user',
+                    JSON.stringify({ ...me, avatar: updated.avatar })
+                );
+            }
+        } catch {
+            flash('Fel vid uppdatering.');
+        }
     };
 
-    const handleDelete = () => {
-        if (window.confirm('Är du säker på att du vill radera ditt konto?')) {
-            deleteUser(userId)
-                .then(() => {
+    const handleDelete = async () => {
+        if (
+            window.confirm(
+                target.id === me.id
+                    ? 'Radera DITT konto?'
+                    : `Radera användare ${target.username}?`
+            )
+        ) {
+            try {
+                await deleteUser(target.id);
+                flash('Användare raderad.');
+                setTarget(null);
+                if (target.id === me.id) {
                     logout();
                     navigate('/login');
-                })
-                .catch(() => setMessage('Fel vid borttagning.'));
+                }
+            } catch {
+                flash('Fel vid borttagning.');
+            }
         }
     };
 
     return (
         <div className="container py-5">
-            <h2 className="mb-4 text-center">Användarhantering</h2>
-            {message && <div className="alert alert-info text-center">{message}</div>}
+            <h2 className="mb-4 text-center">Användar­hantering</h2>
 
-            <div className="input-group mb-4">
+            {msg && <div className="alert alert-info text-center">{msg}</div>}
+
+            {/* lookup */}
+            <form
+                className="input-group mb-4"
+                onSubmit={e => {
+                    e.preventDefault();
+                    handleLookup();
+                }}
+            >
                 <input
-                    type="text"
                     className="form-control"
                     placeholder="Ange användar-ID"
-                    value={userId}
-                    onChange={e => setUserId(e.target.value)}
+                    value={searchId}
+                    onChange={e => setSearchId(e.target.value)}
                 />
-                <button className="btn btn-primary" onClick={() => setUserId(userId)}>
+                <button type="submit" className="btn btn-primary">
                     Hämta
                 </button>
-            </div>
+            </form>
 
-            {user && (
+            {/* user card */}
+            {target && (
                 <div className="card shadow-sm">
                     <div className="row g-0">
                         <div className="col-md-4 d-flex align-items-center justify-content-center p-3 bg-light">
                             <img
-                                src={formData.avatar || 'https://via.placeholder.com/150'}
+                                src={form.avatar || fallbackAvatar(target.id)}
                                 alt="Avatar"
                                 className="rounded-circle border border-3 border-primary"
-                                style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                                style={{ width: 150, height: 150, objectFit: 'cover' }}
                             />
                         </div>
                         <div className="col-md-8 p-4">
                             <div className="mb-3">
                                 <label className="form-label">Användarnamn</label>
                                 <input
-                                    type="text"
                                     name="username"
                                     className="form-control"
-                                    value={formData.username}
+                                    value={form.username}
                                     onChange={handleChange}
                                 />
                             </div>
                             <div className="mb-3">
                                 <label className="form-label">E-post</label>
                                 <input
-                                    type="email"
                                     name="email"
+                                    type="email"
                                     className="form-control"
-                                    value={formData.email}
+                                    value={form.email}
                                     onChange={handleChange}
                                 />
                             </div>
                             <div className="mb-3">
                                 <label className="form-label">Avatar-URL</label>
                                 <input
-                                    type="text"
                                     name="avatar"
                                     className="form-control"
-                                    value={formData.avatar}
+                                    value={form.avatar}
                                     onChange={handleChange}
                                 />
                             </div>
+
                             <div className="d-flex justify-content-end gap-2">
                                 <button className="btn btn-success" onClick={handleUpdate}>
                                     Uppdatera

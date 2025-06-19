@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     // Funktion för att hämta CSRF-token från servern och lagra den i sessionStorage.
     const fetchCsrfToken = async () => {
         try {
-            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/csrf`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/csrf`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
     // Funktion för att registrera en ny användare.
     const registerUser = async (username, password) => {
         try {
-            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/auth/register`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ export const AuthProvider = ({ children }) => {
     // Funktion för att generera en JWT-token vid inloggning.
     const generateToken = async (username, password) => {
         try {
-            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/auth/token`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/token`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,59 +123,72 @@ export const AuthProvider = ({ children }) => {
     // Funktion för att hämta användaruppgifter från servern baserat på användar-ID.
     const fetchUser = async (userId) => {
         try {
-            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/users/${userId}`, {
+            const BASE_URL = import.meta.env.VITE_BASE_URL;
+            const response = await fetch(`${BASE_URL}/users/${userId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
             });
             if (!response.ok) throw new Error('Failed to fetch user');
-            const fetchedUser = await response.json();
-            console.log('Fetched user:', fetchedUser);
-            return fetchedUser;
+
+            const data = await response.json();
+
+            // Om data är en array, returnera första elementet
+            const user = Array.isArray(data) ? data[0] : data;
+
+            console.log('Fetched user:', user);
+            return user;
         } catch (error) {
             console.error("Error fetching user:", error);
             throw error;
         }
     };
 
+
     // Funktion för att uppdatera användaruppgifter på servern.
-    const updateUser = async (user) => {
-        console.log("Starting updateUser with data:", user);
-        try {
-            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/user`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: user.id,
-                    updatedData: user
-                }),
-            });
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-            if (!response.ok) {
-                throw new Error('Failed to update user');
-            }
+    const updateUser = async (payload) => {
+        const res = await fetch(`${BASE_URL}/user`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken,
+            },
+            body: JSON.stringify({
+                userId: payload.id,
+                updatedData: payload,
+            }),
+        });
 
-            const updatedUser = await response.json();
-            console.log("Updated user from server:", updatedUser);
+        if (!res.ok) throw new Error(await res.text());
 
-            setUser(updatedUser);
-            localStorage.setItem('user', JSON.stringify(updatedUser));
-            console.log("User updated in localStorage:", updatedUser);
+        const data = await res.json();
 
-            return updatedUser;
-        } catch (error) {
-            console.error("Error updating user:", error);
-            throw error;
+
+        let updated =
+            Array.isArray(data) ? data[0] :
+                data.updatedUser ? data.updatedUser :
+                    data.user ? data.user :
+                        null;
+
+        if (!updated || !updated.username) {
+            updated = await fetchUser(payload.id);
         }
+
+        setUser(updated);
+        localStorage.setItem('user', JSON.stringify(updated));
+
+        return updated;
     };
+
+
 
     // Funktion för att radera en användare från servern baserat på användar-ID.
     const deleteUser = async (userId) => {
         try {
-            const response = await fetch(`${(process.env.VITE_BASE_URL || import.meta.env.VITE_BASE_URL)}/users/${userId}`, {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/${userId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
